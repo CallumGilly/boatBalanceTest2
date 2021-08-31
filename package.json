@@ -1,0 +1,19 @@
+{
+  "name": "boatbalancetest2",
+  "version": "2.0.0",
+  "description": "An algorithm to balance a dragon boat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CallumGilly/boatBalanceTest2.git"
+  },
+  "author": "Callum Gilchrist <callumgilchrist21@btinternet.com> (https://callumgilly.github.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CallumGilly/boatBalanceTest2/issues"
+  },
+  "homepage": "https://github.com/CallumGilly/boatBalanceTest2#readme"
+}
