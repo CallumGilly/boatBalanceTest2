@@ -12,10 +12,10 @@ class boat {
         //Add the new person to the side with the least people or the left and increase the total by 1
         if (this.left.length > this.right.length) {
             this.right[this.right.length] = person;
-            this.total ++;
+            this.totalPaddlers ++;
         } else {
             this.left[this.left.length] = person;
-            this.total ++;
+            this.totalPaddlers ++;
         }
     }
 
@@ -28,6 +28,10 @@ class boat {
             totalMoment += boatSize[x] * arr[x].weight;
         }
         return totalMoment;
+    }
+
+    calcLongMoment() {
+        let seatDist = 0.80;
     }
 
     calculateMomentDiff() { // Negative means left heavy
