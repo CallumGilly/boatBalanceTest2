@@ -15,7 +15,7 @@ tempPaddlers.forEach(paddler => {
     paddlers[paddlers.length] = new person(paddler[0],paddler[1],paddler[2],paddler[3]);
 });
 //Paddlers in form: Weight, Gender, Preference, Weight
-
-console.log(paddlers);
 var myBoat = new boat();
 myBoat.addListOfPaddlers(paddlers);
+console.log(myBoat.calculateMoment());
+console.log(myBoat);
