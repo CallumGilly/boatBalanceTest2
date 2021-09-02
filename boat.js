@@ -62,6 +62,53 @@ class boat {
         return {leftRightMoment, frontBackMoment}
     }
 
+    arraySwap(parsedArray1, pos1, pos2, parsedArray2) {
+        if (parsedArray2 == undefined) {
+            let temp = parsedArray1[pos1];
+            parsedArray1[pos1] = parsedArray1[pos2];
+            parsedArray1[pos2] = temp;
+            return parsedArray1;
+        } else {
+            let temp = parsedArray1[pos1];
+            parsedArray1[pos1] = parsedArray2[pos2];
+            parsedArray2[pos2] = temp;
+            return {parsedArray1,parsedArray2};
+        }
+    }
+
+    adjustBoat() {
+        //Will make one swap of paddlers to improve balance
+        //Picks a random paddler and tests what would happen if there where swapped with another paddler
+        let randomPaddler = Math.floor(Math.random() * 19)
+        // IF >= 9 than on right and randomPaddler - 9
+        let bestMoment = this.calculateMoment();
+        var trialBoat = this;
+        let bestBoat = trialBoat;
+        for (var chosen = 0; chosen <= 18; chosen++) {
+            trialBoat = this;
+            if (randomPaddler < 9) {
+                if (chosen < 9) {
+                    trialBoat.arraySwap(trialBoat.left,randomPaddler,chosen);
+                } else {
+                    trialBoat.arraySwap(trialBoat.left,randomPaddler,18 - chosen, trialBoat.right);
+                }
+            } else {
+                if (chosen >= 9) {
+                    trialBoat.arraySwap(trialBoat.right, 18 - randomPaddler,18 - chosen);
+                } else {
+                    trialBoat.arraySwap(trialBoat.right, 18 - randomPaddler,chosen, trialBoat.left);
+                }
+            }
+            var tempMoment = trialBoat.calculateMoment();
+            if (Math.abs(bestMoment[0]) + Math.abs(bestMoment[1]) > Math.abs(tempMoment[0]) + Math.abs(tempMoment[1]) ) {
+                bestMoment = tempMoment;
+                bestBoat = trialBoat;
+            }
+        }
+        this.left = bestBoat.left;
+        this.right = bestBoat.right;
+    }
+
     addListOfPaddlers(paddlerList) {
         //Sort List by weight
         paddlerList.sort((a, b) => {

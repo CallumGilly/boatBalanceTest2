@@ -19,3 +19,6 @@ var myBoat = new boat();
 myBoat.addListOfPaddlers(paddlers);
 console.log(myBoat.calculateMoment());
 console.log(myBoat);
+myBoat.adjustBoat();
+console.log(myBoat.calculateMoment());
+console.log(myBoat);
