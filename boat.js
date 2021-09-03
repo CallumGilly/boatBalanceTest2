@@ -76,6 +76,16 @@ class boat {
         }
     }
 
+    optimiseBoat() {
+        let flag = true;
+        while (flag) {
+            this.adjustBoat();
+            if (Math.abs(this.calculateMoment().leftRightMoment) + Math.abs(this.calculateMoment().frontBackMoment) <= 2) {
+                flag = false;
+            }
+        }
+    }
+
     adjustBoat() {
         //Will make one swap of paddlers to improve balance
         //Picks a random paddler and tests what would happen if there where swapped with another paddler
