@@ -41,7 +41,7 @@ class boat {
 
         let leftRightMoment = leftMoment - rightMoment;
 
-        //Take center of boat to be between seat 4 and 5
+        //Take center of boat to be seat 5
         //Take seat widths to be 0.8m between each seat
 
         let frontBackMoment = 0;
@@ -49,17 +49,16 @@ class boat {
         //moment of seat = seat dist from 4/5 * 0.8 * weight
         for (var seatNum = 0; seatNum < this.left.length; seatNum ++) {
             if (seatNum <= 4) {
-                let multiplier = ((4 - seatNum) * 0.8) + 0.4;
+                let multiplier = ((4 - seatNum) * 0.8) + 0.7;
                 frontBackMoment += multiplier * this.left[seatNum].weight;
                 frontBackMoment += multiplier * this.right[seatNum].weight;
             } else { // (seatNum > 4)
-                let multiplier = ((seatNum - 5) * 0.8) + 0.4;
+                let multiplier = ((seatNum - 5) * 0.8 + 0.1);
                 frontBackMoment -= multiplier * this.left[seatNum].weight;
                 frontBackMoment -= multiplier * this.right[seatNum].weight
             };
         }
-
-        return {leftRightMoment, frontBackMoment}
+        return {leftRightMoment, frontBackMoment};
     }
 
     arraySwap(parsedArray1, pos1, pos2, parsedArray2) {
@@ -78,9 +77,20 @@ class boat {
 
     optimiseBoat() {
         let flag = true;
+        let counter = 0;
+        const OGLeft = this.left;
+        const OGRight = this.right;
         while (flag) {
-            this.adjustBoat();
-            if (Math.abs(this.calculateMoment().leftRightMoment) + Math.abs(this.calculateMoment().frontBackMoment) <= 2) {
+            if (this.adjustBoat() == -1) {
+                counter++;
+            }
+
+            if (counter >= 3) {
+                this.left = OGLeft;
+                this.right = OGRight;
+                //console.log("Reset");
+            }
+            if (Math.abs(this.calculateMoment().leftRightMoment) + Math.abs(this.calculateMoment().frontBackMoment) <= 10) {
                 flag = false;
             }
         }
@@ -115,6 +125,7 @@ class boat {
                 bestBoat = trialBoat;
             }
         }
+        if (this.left == bestBoat.left && this.right == bestBoat.right) {return  -1}
         this.left = bestBoat.left;
         this.right = bestBoat.right;
     }
