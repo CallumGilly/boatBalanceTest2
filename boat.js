@@ -51,11 +51,11 @@ class boat {
         //moment of seat = seat dist from 4/5 * 0.8 * weight
         for (var seatNum = 0; seatNum < leftArr.length; seatNum ++) {
             if (seatNum <= 4) {
-                let multiplier = ((4 - seatNum) * 0.8 + 0.8);
+                let multiplier = ((4 - seatNum) * 0.8 + 0);
                 frontBackMoment += multiplier * leftArr[seatNum].weight;
                 frontBackMoment += multiplier * rightArr[seatNum].weight;
             } else { // (seatNum > 4)
-                let multiplier = ((seatNum - 5) * 0.8);
+                let multiplier = ((seatNum - 5) * 0.8 + 0.8);
                 frontBackMoment -= multiplier * leftArr[seatNum].weight;
                 frontBackMoment -= multiplier * rightArr[seatNum].weight
             };
@@ -80,10 +80,22 @@ class boat {
     optimiseBoat() {
         let timeoutCounter = 0
         let flag = true;
-        while (flag && timeoutCounter < 10000) {
-            flag = this.optimiseFrontBack();
-            timeoutCounter++;
+
+        for (var counter = 0; counter < 5; counter++) {
+            while (flag && timeoutCounter < 10000) {
+                flag = this.corseOptimiseFrontBack();
+                timeoutCounter++;
+            }
+            timeoutCounter = 0
+            flag = true;
+            while (flag && timeoutCounter < 1) {
+                flag = this.fineOptimiseFrontBack();
+                timeoutCounter++;
+            }
+            timeoutCounter = 9000
+            flag = true;
         }
+        
         timeoutCounter = 0
         flag = true;
         while (flag && timeoutCounter < 10000) {
@@ -122,7 +134,94 @@ class boat {
         }
     }
 
-    optimiseFrontBack() {
+    fineOptimiseFrontBack() {
+        //If negative back heavy/ right heavy
+        const initialMoment = this.calculateMoment();
+        let bestMoment = Math.abs(initialMoment.frontBackMoment);
+        //Sides, pos1, pos2 sides in form: 1 = LeftLeft, 2 = LeftRight, 3 = RightLeft, 4 = RightRight
+        let best = [-1,-1,-1];
+        for (var row = 1; row < 10; row++) {
+            let tempValue = this.left[row];
+            this.left[row] = this.left[row - 1];
+            this.left[row - 1] = tempValue;
+            var moment = Math.abs(this.calculateMoment().frontBackMoment);
+            if (moment < bestMoment) {
+                bestMoment = moment;
+                best = [1,row,row-1]
+            }
+            tempValue = this.left[row];
+            this.left[row] = this.left[row - 1];
+            this.left[row - 1] = tempValue;
+
+            tempValue = this.left[row];
+            this.left[row] = this.right[row - 1];
+            this.right[row - 1] = tempValue;
+            var moment = Math.abs(this.calculateMoment().frontBackMoment);
+            if (moment < bestMoment) {
+                bestMoment = moment;
+                best = [2,row,row-1]
+            }
+            tempValue = this.left[row];
+            this.left[row] = this.right[row - 1];
+            this.right[row - 1] = tempValue;
+            
+            tempValue = this.right[row];
+            this.right[row] = this.left[row - 1];
+            this.left[row - 1] = tempValue;
+            var moment = Math.abs(this.calculateMoment().frontBackMoment);
+            if (moment < bestMoment) {
+                bestMoment = moment;
+                best = [3,row,row-1]
+            }
+            tempValue = this.right[row];
+            this.right[row] = this.left[row - 1];
+            this.left[row - 1] = tempValue;
+
+            tempValue = this.right[row];
+            this.right[row] = this.right[row - 1];
+            this.right[row - 1] = tempValue;
+            var moment = Math.abs(this.calculateMoment().frontBackMoment);
+            if (moment < bestMoment) {
+                bestMoment = moment;
+                best = [4,row,row-1]
+            }
+            tempValue = this.right[row];
+            this.right[row] = this.right[row - 1];
+            this.right[row - 1] = tempValue;
+
+        }
+        if (best !== [-1,-1,-1]) {
+            switch (best[0]) {
+                case 1:
+                    var tempValue = this.left[best[1]];
+                    this.left[best[1]] = this.left[best[2]];
+                    this.left[best[2]] = tempValue;
+                    break;
+                case 2:
+                    var tempValue = this.left[best[1]];
+                    this.left[best[1]] = this.right[best[2]];
+                    this.right[best[2]] = tempValue;
+                    break;
+                case 3:
+                    var tempValue = this.right[best[1]];
+                    this.right[best[1]] = this.left[best[2]];
+                    this.left[best[2]] = tempValue;
+                    break;
+                case 3:
+                    var tempValue = this.right[best[1]];
+                    this.right[best[1]] = this.right[best[2]];
+                    this.right[best[2]] = tempValue;
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    corseOptimiseFrontBack() {
         const initialMoment = this.calculateMoment();
         let bestMoment = Math.abs(initialMoment.frontBackMoment);
         let bestLeft = -1;
