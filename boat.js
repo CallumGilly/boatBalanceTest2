@@ -80,8 +80,6 @@ class boat {
     optimiseFrontBack() {
         const initialMoment = this.calculateMoment();
         let bestMoment = Math.abs(initialMoment.frontBackMoment);
-        const initialLeft = this.left;
-        const initialRight = this.right;
         let bestLeft = -1;
         let bestRight = -1;
         //If negative back heavy/ right heavy
@@ -93,19 +91,17 @@ class boat {
         }
         for (var initial = range[0]; initial <= range[1]; initial++) {
             for (var secondary = range[2]; secondary <= range[3]; secondary++) {
-                let testLeft = initialLeft;
-                let testRight = initialRight;
                 if (initialMoment.leftRightMoment < 0) {
-                    let tempValue = testLeft[secondary];
-                    testLeft[secondary] = testRight[initial];
-                    testRight[initial] = tempValue;
+                    let tempValue = this.left[secondary];
+                    this.left[secondary] = this.right[initial];
+                    this.right[initial] = tempValue;
                 } else {
-                    let tempValue = testLeft[initial];
-                    testLeft[initial] = testRight[secondary];
-                    testRight[secondary] = tempValue;
+                    let tempValue = this.left[initial];
+                    this.left[initial] = this.right[secondary];
+                    this.right[secondary] = tempValue;
                 }
                 
-                let swappedMoment = this.calculateMoment(testLeft,testRight);
+                let swappedMoment = this.calculateMoment(this.left,this.right);
                 if (Math.abs(swappedMoment.frontBackMoment) < bestMoment) {
                     if (initialMoment.leftRightMoment < 0) {
                         bestLeft = secondary;
@@ -118,13 +114,13 @@ class boat {
                 }
 
                 if (initialMoment.leftRightMoment < 0) {
-                    let tempValue = testLeft[secondary];
-                    testLeft[secondary] = testRight[initial];
-                    testRight[initial] = tempValue;
+                    let tempValue = this.left[secondary];
+                    this.left[secondary] = this.right[initial];
+                    this.right[initial] = tempValue;
                 } else {
-                    let tempValue = testLeft[initial];
-                    testLeft[initial] = testRight[secondary];
-                    testRight[secondary] = tempValue;
+                    let tempValue = this.left[initial];
+                    this.left[initial] = this.right[secondary];
+                    this.right[secondary] = tempValue;
                 }  
 
             }
