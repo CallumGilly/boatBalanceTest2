@@ -31,13 +31,15 @@ class boat {
         return totalMoment;
     }
 
-    calculateMoment() {
+    calculateMoment(leftArr = this.left, rightArr = this.right) {
         //Input: N/A
         //Output: {Number, Number} = {leftMoment - RightMoment, FrontMoment - BackMoment}
         //Thus if negative than right heavy or back heavy
 
-        let leftMoment = this.calculateSideMoment(this.left);
-        let rightMoment = this.calculateSideMoment(this.right);
+        
+
+        let leftMoment = this.calculateSideMoment(leftArr);
+        let rightMoment = this.calculateSideMoment(rightArr);
 
         let leftRightMoment = leftMoment - rightMoment;
 
@@ -47,15 +49,15 @@ class boat {
         let frontBackMoment = 0;
 
         //moment of seat = seat dist from 4/5 * 0.8 * weight
-        for (var seatNum = 0; seatNum < this.left.length; seatNum ++) {
+        for (var seatNum = 0; seatNum < leftArr.length; seatNum ++) {
             if (seatNum <= 4) {
                 let multiplier = ((4 - seatNum) * 0.8) + 0.7;
-                frontBackMoment += multiplier * this.left[seatNum].weight;
-                frontBackMoment += multiplier * this.right[seatNum].weight;
+                frontBackMoment += multiplier * leftArr[seatNum].weight;
+                frontBackMoment += multiplier * rightArr[seatNum].weight;
             } else { // (seatNum > 4)
                 let multiplier = ((seatNum - 5) * 0.8 + 0.1);
-                frontBackMoment -= multiplier * this.left[seatNum].weight;
-                frontBackMoment -= multiplier * this.right[seatNum].weight
+                frontBackMoment -= multiplier * leftArr[seatNum].weight;
+                frontBackMoment -= multiplier * rightArr[seatNum].weight
             };
         }
         return {leftRightMoment, frontBackMoment};
@@ -75,7 +77,66 @@ class boat {
         }
     }
 
-    
+    optimiseFrontBack() {
+        const initialMoment = this.calculateMoment();
+        let bestMoment = Math.abs(initialMoment.frontBackMoment);
+        const initialLeft = this.left;
+        const initialRight = this.right;
+        let bestLeft = -1;
+        let bestRight = -1;
+        //If negative back heavy/ right heavy
+        let range = [0, 0, 0, 0];
+        if (initialMoment.frontBackMoment < 0) {
+            range = [5, 9, 0, 4];
+        } else {
+            range = [0, 4, 5, 9];
+        }
+        for (var initial = range[0]; initial <= range[1]; initial++) {
+            for (var secondary = range[2]; secondary <= range[3]; secondary++) {
+                let testLeft = initialLeft;
+                let testRight = initialRight;
+                if (initialMoment.leftRightMoment < 0) {
+                    let tempValue = testLeft[secondary];
+                    testLeft[secondary] = testRight[initial];
+                    testRight[initial] = tempValue;
+                } else {
+                    let tempValue = testLeft[initial];
+                    testLeft[initial] = testRight[secondary];
+                    testRight[secondary] = tempValue;
+                }
+                
+                let swappedMoment = this.calculateMoment(testLeft,testRight);
+                if (Math.abs(swappedMoment.frontBackMoment) < bestMoment) {
+                    if (initialMoment.leftRightMoment < 0) {
+                        bestLeft = secondary;
+                        bestRight = initial;
+                    } else {
+                        bestLeft = initial;
+                        bestRight = secondary;
+                    }
+                    bestMoment = Math.abs(swappedMoment.frontBackMoment);
+                }
+
+                if (initialMoment.leftRightMoment < 0) {
+                    let tempValue = testLeft[secondary];
+                    testLeft[secondary] = testRight[initial];
+                    testRight[initial] = tempValue;
+                } else {
+                    let tempValue = testLeft[initial];
+                    testLeft[initial] = testRight[secondary];
+                    testRight[secondary] = tempValue;
+                }  
+
+            }
+        }
+
+        if (bestLeft !== -1) {
+            let temp = this.left[bestLeft];
+            this.left[bestLeft] = this.right[bestRight];
+            this.right[bestRight] = temp;
+        }
+
+    }
 
     addListOfPaddlers(paddlerList) {
         //Sort List by weight

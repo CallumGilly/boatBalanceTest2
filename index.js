@@ -19,6 +19,6 @@ var myBoat = new boat();
 myBoat.addListOfPaddlers(paddlers);
 console.log(myBoat.calculateMoment());
 console.log(myBoat);
-myBoat.optimiseBoat();
+myBoat.optimiseFrontBack();
 console.log(myBoat);
 console.log(myBoat.calculateMoment());
