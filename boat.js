@@ -51,11 +51,11 @@ class boat {
         //moment of seat = seat dist from 4/5 * 0.8 * weight
         for (var seatNum = 0; seatNum < leftArr.length; seatNum ++) {
             if (seatNum <= 4) {
-                let multiplier = ((4 - seatNum) * 0.8) + 0.7;
+                let multiplier = ((4 - seatNum) * 0.8 + 0.8);
                 frontBackMoment += multiplier * leftArr[seatNum].weight;
                 frontBackMoment += multiplier * rightArr[seatNum].weight;
             } else { // (seatNum > 4)
-                let multiplier = ((seatNum - 5) * 0.8 + 0.1);
+                let multiplier = ((seatNum - 5) * 0.8);
                 frontBackMoment -= multiplier * leftArr[seatNum].weight;
                 frontBackMoment -= multiplier * rightArr[seatNum].weight
             };
@@ -74,6 +74,51 @@ class boat {
             parsedArray1[pos1] = parsedArray2[pos2];
             parsedArray2[pos2] = temp;
             return {parsedArray1,parsedArray2};
+        }
+    }
+
+    optimiseBoat() {
+        let timeoutCounter = 0
+        let flag = true;
+        while (flag && timeoutCounter < 10000) {
+            flag = this.optimiseFrontBack();
+            timeoutCounter++;
+        }
+        timeoutCounter = 0
+        flag = true;
+        while (flag && timeoutCounter < 10000) {
+            flag = this.optimiseLeftRight();
+            timeoutCounter++;
+        }
+    }
+
+    optimiseLeftRight() {
+        //If negative back heavy/ right heavy
+        const initialMoment = this.calculateMoment();
+        let bestMoment = Math.abs(initialMoment.leftRightMoment);
+        let bestLeft = -1;
+        let bestRight = -1;
+        for (var row = 0; row < 10; row++) {
+            let tempValue = this.left[row];
+            this.left[row] = this.right[row];
+            this.right[row] = tempValue;
+            var moment = Math.abs(this.calculateMoment().leftRightMoment);
+            if (moment < bestMoment) {
+                bestMoment = moment;
+                bestLeft = row;
+                bestRight = row;
+            }
+            tempValue = this.left[row];
+            this.left[row] = this.right[row];
+            this.right[row] = tempValue;
+        }
+        if (bestLeft !== -1) {
+            let tempValue = this.left[bestLeft];
+            this.left[bestLeft] = this.right[bestRight];
+            this.right[bestRight] = tempValue;
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -130,6 +175,9 @@ class boat {
             let temp = this.left[bestLeft];
             this.left[bestLeft] = this.right[bestRight];
             this.right[bestRight] = temp;
+            return true;
+        } else {
+            return false;
         }
 
     }
