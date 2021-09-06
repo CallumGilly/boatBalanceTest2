@@ -3,6 +3,7 @@ const person = require('./person');
 class boat {
     constructor () {
         // Makes the basic boat object
+        this.bias = 0.8;
         this.maxPaddlers = 20; //Must Be even
         
         this.left = []
@@ -36,8 +37,6 @@ class boat {
         //Output: {Number, Number} = {leftMoment - RightMoment, FrontMoment - BackMoment}
         //Thus if negative than right heavy or back heavy
 
-        
-
         let leftMoment = this.calculateSideMoment(leftArr);
         let rightMoment = this.calculateSideMoment(rightArr);
 
@@ -51,11 +50,11 @@ class boat {
         //moment of seat = seat dist from 4/5 * 0.8 * weight
         for (var seatNum = 0; seatNum < leftArr.length; seatNum ++) {
             if (seatNum <= 4) {
-                let multiplier = ((4 - seatNum) * 0.8 + 0);
+                let multiplier = ((4 - seatNum) * 0.8 + (0.8 - this.bias));
                 frontBackMoment += multiplier * leftArr[seatNum].weight;
                 frontBackMoment += multiplier * rightArr[seatNum].weight;
             } else { // (seatNum > 4)
-                let multiplier = ((seatNum - 5) * 0.8 + 0.8);
+                let multiplier = ((seatNum - 5) * 0.8 + this.bias);
                 frontBackMoment -= multiplier * leftArr[seatNum].weight;
                 frontBackMoment -= multiplier * rightArr[seatNum].weight
             };
@@ -88,7 +87,7 @@ class boat {
             }
             timeoutCounter = 0
             flag = true;
-            while (flag && timeoutCounter < 1) {
+            while (flag && timeoutCounter < 100) {
                 flag = this.fineOptimiseFrontBack();
                 timeoutCounter++;
             }
